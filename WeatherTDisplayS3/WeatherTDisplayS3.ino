@@ -17,8 +17,8 @@ ESP32Time rtc(0);
 
 //#################### EDIT THIS  ###################
 //time zone  
-int zone = 2;
-String town = "Zagreb";
+int zone = 1;
+String town = "Copenhagen";
 String myAPI = "d0d0bf1bb46822e5dce67c95f4fd0800";
 String units = "metric";  //  metric, imperial
 //#################### end of edits ###################
