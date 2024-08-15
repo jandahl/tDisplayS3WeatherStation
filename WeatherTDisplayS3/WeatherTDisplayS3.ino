@@ -16,11 +16,11 @@ ESP32Time rtc(0);
 
 
 //#################### EDIT THIS  ###################
-// All of these moved to config.h
-// int zone = 1;
-// String town = "Copenhagen";
-// String myAPI = "d0d0bf1bb46822e5dce67c95f4fd0800";
-// String units = "metric";  //  metric, imperial
+int zone = 1;
+String town = "Copenhagen";
+// defined in config.h
+String myAPI = OPENWEATHER_API_KEY;
+String units = "metric";  //  metric, imperial
 //#################### end of edits ###################
 
 
