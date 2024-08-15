@@ -9,6 +9,7 @@
 #include "midleFont.h"
 #include "bigFont.h"
 #include "font18.h"
+#include "config.h"
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 TFT_eSprite errSprite = TFT_eSprite(&tft);
@@ -17,14 +18,21 @@ ESP32Time rtc(0);
 
 //#################### EDIT THIS  ###################
 int zone = 1;
-String town = "Copenhagen";
+String town = "Herlev, DK";
 // defined in config.h
 String myAPI = OPENWEATHER_API_KEY;
 String units = "metric";  //  metric, imperial
+
+// updateTimer in milliseconds; remember you have a limited number of free calls to OpenWeatherAPI
+// 180000 ms = 3 minutes
+// 1800000 ms = 30 minutes
+int updateTimer = 1800000;
+
+//String backgroundColour = "TFT_BLACK";
 //#################### end of edits ###################
 
 
-const char* ntpServer = "pool.ntp.org";
+const char* ntpServer = "dk.pool.ntp.org";
 String server = "https://api.openweathermap.org/data/2.5/weather?q=" + town + "&appid=" + myAPI + "&units=" + units;
 
 
@@ -179,7 +187,7 @@ void draw() {
   sprite.fillCircle(8, 52, 2, grays[2]);
   sprite.unloadFont();
 
-  // draw wime without seconds
+  // draw time without seconds
   sprite.loadFont(tinyFont);
   sprite.setTextColor(grays[4], TFT_BLACK);
   sprite.drawString(rtc.getTime().substring(0, 5), 6, 132);
@@ -272,7 +280,7 @@ void updateData() {
 
   //
 
-  if (millis() > timePased + 180000) {
+  if (millis() > timePased + updateTimer) {
     timePased = millis();
     counter++;
     getData();
