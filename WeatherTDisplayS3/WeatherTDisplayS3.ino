@@ -10,6 +10,7 @@
 #include "bigFont.h"
 #include "font18.h"
 #include "config.h"
+#include "theme.h"
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 TFT_eSprite errSprite = TFT_eSprite(&tft);
@@ -33,7 +34,6 @@ int updateTimer = 180000;
 // If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points 
 // for a graph that is not 240 points wide. Weeeeird.
 
-//String backgroundColour = "TFT_BLACK";
 //#################### end of edits ###################
 
 
@@ -57,7 +57,7 @@ char* PPlbl[] = { "HUM", "PRESS", "WIND" };
 String PPlblU[] = { "%", "hPa", "m/s" };
 
 //data that changes
-float temperature = 22.2;
+float temperature = 66.6;
 float wData[3];
 float PPpower[24] = {};    //graph
 float PPpowerT[24] = {};   //graph
@@ -85,7 +85,7 @@ void setup() {
 
   tft.init();
   tft.setRotation(1);
-  tft.fillScreen(TFT_BLACK);
+  tft.fillScreen(BACKGROUND_COLOR);
   tft.drawString("Connecting to WIFI!!",30,50,4);
   sprite.createSprite(320, 170);
   errSprite.createSprite(164, 15);
@@ -167,7 +167,7 @@ void draw() {
   errSprite.drawString(Wmsg, ani, 4);
 
   // Below: Draw background for most of the screen
-  sprite.fillSprite(TFT_BLACK);
+  sprite.fillSprite(BACKGROUND_COLOR);
   // Below: Top to bottom divider line
   sprite.drawLine(138, 10, 138, 164, grays[6]);
   // Below: Divider line under temperature decimal and above seconds
@@ -176,42 +176,42 @@ void draw() {
 
   //LEFTSIDE
   sprite.loadFont(midleFont);
-  sprite.setTextColor(grays[1], TFT_BLACK);
+  sprite.setTextColor(grays[1], BACKGROUND_COLOR);
   sprite.drawString("WEATHER", 6, 10);
   sprite.unloadFont();
 
   sprite.loadFont(font18);
-  sprite.setTextColor(grays[7], TFT_BLACK);
+  sprite.setTextColor(grays[7], BACKGROUND_COLOR);
   sprite.drawString("TOWN:", 6, 110);
-  sprite.setTextColor(grays[2], TFT_BLACK);
+  sprite.setTextColor(grays[2], BACKGROUND_COLOR);
   if (units == "metric")
     sprite.drawString("C", 14, 50);
   if (units == "imperial")
     sprite.drawString("F", 14, 50);
 
  
-  sprite.setTextColor(grays[3], TFT_BLACK);
+  sprite.setTextColor(grays[3], BACKGROUND_COLOR);
   sprite.drawString(town, 46, 110);
   sprite.fillCircle(8, 52, 2, grays[2]);
   sprite.unloadFont();
 
   // draw time without seconds
   sprite.loadFont(tinyFont);
-  sprite.setTextColor(grays[4], TFT_BLACK);
+  sprite.setTextColor(grays[4], BACKGROUND_COLOR);
   sprite.drawString(rtc.getTime().substring(0, 5), 6, 132);
   sprite.unloadFont();
 
   // draw some static text
-  sprite.setTextColor(grays[5], TFT_BLACK);
+  sprite.setTextColor(grays[5], BACKGROUND_COLOR);
   sprite.drawString("INTERNET", 86, 10);
   sprite.drawString("STATION", 86, 20);
-  sprite.setTextColor(grays[7], TFT_BLACK);
+  sprite.setTextColor(grays[7], BACKGROUND_COLOR);
   sprite.drawString("SECONDS", 92, 157);
 
   // draw temperature
   sprite.setTextDatum(4);
   sprite.loadFont(bigFont);
-  sprite.setTextColor(grays[0], TFT_BLACK);
+  sprite.setTextColor(grays[0], BACKGROUND_COLOR);
   sprite.drawFloat(temperature, 1, 69, 80);
   sprite.unloadFont();
 
@@ -220,7 +220,7 @@ void draw() {
   sprite.fillRoundRect(90, 132, 42, 22, 2, grays[2]);
   //draw seconds
   sprite.loadFont(font18);
-  sprite.setTextColor(TFT_BLACK, grays[2]);
+  sprite.setTextColor(BACKGROUND_COLOR, grays[2]);
   sprite.drawString(rtc.getTime().substring(6, 8), 111, 144);
   sprite.unloadFont();
 
@@ -228,16 +228,16 @@ void draw() {
   sprite.setTextDatum(0);
   //RIGHT SIDE
   sprite.loadFont(font18);
-  sprite.setTextColor(grays[1], TFT_BLACK);
+  sprite.setTextColor(grays[1], BACKGROUND_COLOR);
   sprite.drawString("LAST 12 HOURS", 144, 10);
   sprite.unloadFont();
 
   sprite.fillRect(144, 28, 84, 2, grays[10]);
 
-  sprite.setTextColor(grays[3], TFT_BLACK);
+  sprite.setTextColor(grays[3], BACKGROUND_COLOR);
   sprite.drawString("MIN:" + String(minT), 254, 10);
   sprite.drawString("MAX:" + String(maxT), 254, 20);
-  sprite.fillSmoothRoundRect(144, 34, 174, 60, 3, grays[10], bck);
+  sprite.fillSmoothRoundRect(144, 34, 174, 60, 3, grays[10], BACKGROUND_COLOR);
   sprite.drawLine(170, 39, 170, 88, TFT_WHITE);
   sprite.drawLine(170, 88, 314, 88, TFT_WHITE);
 
@@ -258,7 +258,7 @@ void draw() {
 
 
   for (int i = 0; i < 3; i++) {
-    sprite.fillSmoothRoundRect(144 + (i * 60), 100, 54, 32, 3, grays[9], bck);
+    sprite.fillSmoothRoundRect(144 + (i * 60), 100, 54, 32, 3, grays[9], BACKGROUND_COLOR);
     sprite.setTextColor(grays[3], grays[9]);
     sprite.drawString(PPlbl[i], 144 + (i * 60) + 27, 107);
     sprite.setTextColor(grays[2], grays[9]);
@@ -266,13 +266,13 @@ void draw() {
     sprite.drawString(String((int)wData[i])+PPlblU[i], 144 + (i * 60) + 27, 124);
     sprite.unloadFont();
 
-    sprite.fillSmoothRoundRect(144, 148, 174, 16, 2, grays[10], bck);
+    sprite.fillSmoothRoundRect(144, 148, 174, 16, 2, grays[10], BACKGROUND_COLOR);
     errSprite.pushToSprite(&sprite, 148, 150);
   }
-  sprite.setTextColor(grays[4], bck);
+  sprite.setTextColor(grays[4], BACKGROUND_COLOR);
   sprite.drawString("CURRENT WEATHER", 190, 141);
-  sprite.setTextColor(grays[9], bck);
-   sprite.drawString(String(counter), 310, 141);
+  sprite.setTextColor(grays[9], BACKGROUND_COLOR);
+  sprite.drawString(String(counter), 310, 141);
 
   sprite.pushSprite(0, 0);
 }
