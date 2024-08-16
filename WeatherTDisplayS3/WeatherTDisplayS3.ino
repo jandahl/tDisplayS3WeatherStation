@@ -17,16 +17,21 @@ ESP32Time rtc(0);
 
 
 //#################### EDIT THIS  ###################
-int zone = 1;
-String town = "Herlev, DK";
+int zone = 2;
+String town = "Haslev";
 // defined in config.h
 String myAPI = OPENWEATHER_API_KEY;
 String units = "metric";  //  metric, imperial
 
 // updateTimer in milliseconds; remember you have a limited number of free calls to OpenWeatherAPI
-// 180000 ms = 3 minutes
+// However, ALSO remember that changing this affects the graph so it will no longer be 12 hours
+// 180000 ms = 3 minutes - default
+// 600000 ms = 10 minutes
 // 1800000 ms = 30 minutes
-int updateTimer = 1800000;
+int updateTimer = 180000;
+
+// If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points 
+// for a graph that is not 240 points wide. Weeeeird.
 
 //String backgroundColour = "TFT_BLACK";
 //#################### end of edits ###################
@@ -161,8 +166,11 @@ void draw() {
   errSprite.setTextColor(grays[1], grays[10]);
   errSprite.drawString(Wmsg, ani, 4);
 
+  // Below: Draw background for most of the screen
   sprite.fillSprite(TFT_BLACK);
+  // Below: Top to bottom divider line
   sprite.drawLine(138, 10, 138, 164, grays[6]);
+  // Below: Divider line under temperature decimal and above seconds
   sprite.drawLine(100, 108, 134, 108, grays[6]);
   sprite.setTextDatum(0);
 
@@ -221,7 +229,7 @@ void draw() {
   //RIGHT SIDE
   sprite.loadFont(font18);
   sprite.setTextColor(grays[1], TFT_BLACK);
-  sprite.drawString("LAST 12 HOUR", 144, 10);
+  sprite.drawString("LAST 12 HOURS", 144, 10);
   sprite.unloadFont();
 
   sprite.fillRect(144, 28, 84, 2, grays[10]);
@@ -308,7 +316,6 @@ void updateData() {
 }
 
 void loop() {
-
   updateData();
   draw();
 }
