@@ -1,12 +1,12 @@
 #include <WiFiManager.h>  // https://github.com/tzapu/WiFiManager  version 2.0.17
 #include <TFT_eSPI.h>
-#include <ArduinoJson.h> // 7.1.0
-#include <HTTPClient.h> // https://github.com/arduino-libraries/ArduinoHttpClient   version 0.6.1
-#include <ESP32Time.h>  // https://github.com/fbiego/ESP32Time  verison 2.0.6
+#include <ArduinoJson.h>  // 7.1.0
+#include <HTTPClient.h>   // https://github.com/arduino-libraries/ArduinoHttpClient   version 0.6.1
+#include <ESP32Time.h>    // https://github.com/fbiego/ESP32Time  verison 2.0.6
 #include "NotoSansBold15.h"
 #include "tinyFont.h"
 #include "smallFont.h"
-#include "midleFont.h"
+#include "middleFont.h"
 #include "bigFont.h"
 #include "font18.h"
 #include "config.h"
@@ -19,10 +19,10 @@ ESP32Time rtc(0);
 
 //#################### EDIT THIS  ###################
 int zone = 2;
-String town = "Haslev";
+String town = towns[0];
 // defined in config.h
 String myAPI = OPENWEATHER_API_KEY;
-String units = "metric";  //  metric, imperial
+String units = METRICORIMPERIAL;  //  metric, imperial
 
 // updateTimer in milliseconds; remember you have a limited number of free calls to OpenWeatherAPI
 // However, ALSO remember that changing this affects the graph so it will no longer be 12 hours
@@ -31,7 +31,7 @@ String units = "metric";  //  metric, imperial
 // 1800000 ms = 30 minutes
 int updateTimer = 180000;
 
-// If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points 
+// If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points
 // for a graph that is not 240 points wide. Weeeeird.
 
 //#################### end of edits ###################
@@ -46,22 +46,22 @@ int ani = 100;
 float maxT;
 float minT;
 unsigned long timePased = 0;
-int counter=0;
+int counter = 0;
 
 //................colors
 #define bck TFT_BLACK
 unsigned short grays[13];
 
-// static strings of data showed on right side 
+// static strings of data showed on right side
 char* PPlbl[] = { "HUM", "PRESS", "WIND" };
 String PPlblU[] = { "%", "hPa", "m/s" };
 
 //data that changes
 float temperature = 66.6;
 float wData[3];
-float PPpower[24] = {};    //graph
-float PPpowerT[24] = {};   //graph
-int PPgraph[24] = { 0 };   //graph
+float PPpower[24] = {};   //graph
+float PPpowerT[24] = {};  //graph
+int PPgraph[24] = { 0 };  //graph
 
 
 //scroling message on bottom right side
@@ -80,13 +80,13 @@ void setup() {
 
 
   // using this board can work on battery
-  pinMode(15,OUTPUT);
-  digitalWrite(15,1);
+  pinMode(15, OUTPUT);
+  digitalWrite(15, 1);
 
   tft.init();
   tft.setRotation(1);
   tft.fillScreen(BACKGROUND_COLOR);
-  tft.drawString("Connecting to WIFI!!",30,50,4);
+  tft.drawString("Connecting to WIFI!!", 30, 50, 4);
   sprite.createSprite(320, 170);
   errSprite.createSprite(164, 15);
 
@@ -175,7 +175,7 @@ void draw() {
   sprite.setTextDatum(0);
 
   //LEFTSIDE
-  sprite.loadFont(midleFont);
+  sprite.loadFont(middleFont);
   sprite.setTextColor(grays[1], BACKGROUND_COLOR);
   sprite.drawString("WEATHER", 6, 10);
   sprite.unloadFont();
@@ -189,7 +189,7 @@ void draw() {
   if (units == "imperial")
     sprite.drawString("F", 14, 50);
 
- 
+
   sprite.setTextColor(grays[3], BACKGROUND_COLOR);
   sprite.drawString(town, 46, 110);
   sprite.fillCircle(8, 52, 2, grays[2]);
@@ -263,7 +263,7 @@ void draw() {
     sprite.drawString(PPlbl[i], 144 + (i * 60) + 27, 107);
     sprite.setTextColor(grays[2], grays[9]);
     sprite.loadFont(font18);
-    sprite.drawString(String((int)wData[i])+PPlblU[i], 144 + (i * 60) + 27, 124);
+    sprite.drawString(String((int)wData[i]) + PPlblU[i], 144 + (i * 60) + 27, 124);
     sprite.unloadFont();
 
     sprite.fillSmoothRoundRect(144, 148, 174, 16, 2, grays[10], BACKGROUND_COLOR);
@@ -293,11 +293,11 @@ void updateData() {
     counter++;
     getData();
 
-    if (counter==10) {
-       setTime();
-       counter=0;
-       maxT = -50;
-       minT = 1000;
+    if (counter == 10) {
+      setTime();
+      counter = 0;
+      maxT = -50;
+      minT = 1000;
       PPpower[23] = temperature;
       for (int i = 23; i > 0; i--)
         PPpower[i - 1] = PPpowerT[i];
