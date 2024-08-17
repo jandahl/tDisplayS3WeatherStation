@@ -11,6 +11,8 @@
 #include "font18.h"
 #include "config.h"
 #include "theme.h"
+#include "ErrorHandling.h"
+
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 TFT_eSprite errSprite = TFT_eSprite(&tft);
@@ -19,7 +21,7 @@ ESP32Time rtc(0);
 
 //#################### EDIT THIS  ###################
 int zone = 2;
-String town = towns[0];
+String town = towns[2];
 // defined in config.h
 String myAPI = OPENWEATHER_API_KEY;
 String units = METRICORIMPERIAL;  //  metric, imperial
@@ -76,9 +78,6 @@ void setTime() {
 }
 
 void setup() {
-
-
-
   // using this board can work on battery
   pinMode(15, OUTPUT);
   digitalWrite(15, 1);
@@ -118,45 +117,61 @@ void setup() {
 }
 
 void getData() {
-  HTTPClient http;
-  http.begin(server);
-  int httpResponseCode = http.GET();
-
-  if (httpResponseCode > 0) {
-    String payload = http.getString();
-    Serial.println("server response");
-    Serial.println(payload);
-
-    // Parsiranje JSON odgovora
-    StaticJsonDocument<1024> doc;
-    DeserializationError error = deserializeJson(doc, payload);
-
-    if (!error) {
-      temperature = doc["main"]["temp"];
-      wData[0] = doc["main"]["humidity"];
-      wData[1] = doc["main"]["pressure"];
-      wData[2] = doc["wind"]["speed"];
-
-      int visibility = doc["visibility"];
-      const char* description = doc["weather"][0]["description"];
-      long dt = doc["dt"];
-
-      Wmsg = "#Description: " + String(description) + "  #Visbility: " + String(visibility) + " #Updated: " + rtc.getTime();
-
-      // Show temperature on serial monitor
-      Serial.print("Temperature: ");
-      Serial.print(temperature);
-
-    } else {
-      Serial.print("ERROR JSON-a: ");
-      Serial.println(error.c_str());
+    // Ensure Wi-Fi is connected
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("Wi-Fi not connected!");
+        ErrorHandler::displayError(errSprite, "Wi-Fi Disconnected");
+        return;
     }
-  } else {
-    Serial.print("HTTP ERROR ");
-    Serial.println(httpResponseCode);
-  }
 
-  http.end();
+    // Verify the server URL
+    Serial.println("Requesting data from: " + server);
+
+    HTTPClient http;
+    if (!http.begin(server)) {
+        Serial.println("HTTP begin failed!");
+        ErrorHandler::displayError(errSprite, "HTTP Begin Failed");
+        return;
+    }
+
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode == 200) {
+        String payload = http.getString();
+        Serial.println("Received payload: " + payload);
+
+        StaticJsonDocument<1024> doc;
+        DeserializationError error = deserializeJson(doc, payload);
+
+        if (!error) {
+            temperature = doc["main"]["temp"].as<float>();
+            wData[0] = doc["main"]["humidity"].as<float>();
+            wData[1] = doc["main"]["pressure"].as<float>();
+            wData[2] = doc["wind"]["speed"].as<float>();
+
+            int visibility = doc["visibility"].as<int>();
+            const char* description = doc["weather"][0]["description"];
+            long dt = doc["dt"].as<long>();
+
+            Wmsg = "#Description: " + String(description) + 
+                   "  #Visibility: " + String(visibility) + 
+                   " #Updated: " + rtc.getTime();
+
+            Serial.print("Temperature: ");
+            Serial.println(temperature);
+
+        } else {
+            Serial.print("JSON Deserialization Error: ");
+            Serial.println(error.c_str());
+            ErrorHandler::displayError(errSprite, "JSON Error");
+        }
+    } else {
+        Serial.print("HTTP Response Code: ");
+        Serial.println(httpResponseCode);
+        ErrorHandler::displayError(errSprite, "HTTP Error " + String(httpResponseCode));
+    }
+
+    http.end();
 }
 
 
