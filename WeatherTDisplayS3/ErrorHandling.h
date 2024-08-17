@@ -2,6 +2,7 @@
 #define ERROR_HANDLING_H
 
 #include <TFT_eSPI.h>
+#include "theme.h"
 
 class ErrorHandler {
 public:

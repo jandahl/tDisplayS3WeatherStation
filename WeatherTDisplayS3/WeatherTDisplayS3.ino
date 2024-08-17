@@ -17,11 +17,9 @@ TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 TFT_eSprite errSprite = TFT_eSprite(&tft);
 ESP32Time rtc(0);
-
-
-//#################### EDIT THIS  ###################
-int zone = 2;
-String town = towns[2];
+//#################### config.h extracts  ###################
+int zone = TIMEZONE;
+String town = towns[0];
 // defined in config.h
 String myAPI = OPENWEATHER_API_KEY;
 String units = METRICORIMPERIAL;  //  metric, imperial
@@ -34,20 +32,21 @@ String units = METRICORIMPERIAL;  //  metric, imperial
 int updateTimer = 180000;
 
 // If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points
-// for a graph that is not 240 points wide. Weeeeird.
+// for a graph that is not 24 points wide, so 1 in 10. Not sure if it takes
+// an average or just 1 data point
 
-//#################### end of edits ###################
+const char* ntpServer = NTPSERVER;
+// String server = "https://api.openweathermap.org/data/2.5/weather?q=" + town + "&appid=" + myAPI + "&units=" + units;
+String OpenWeatherServer = WEATHERSERVER
+String server = OpenWeatherServer + town + "&appid=" + myAPI + "&units=" + units;
 
-
-const char* ntpServer = "dk.pool.ntp.org";
-String server = "https://api.openweathermap.org/data/2.5/weather?q=" + town + "&appid=" + myAPI + "&units=" + units;
-
+//#################### end of config.h extracts ###################
 
 //additional variables
 int ani = 100;
 float maxT;
 float minT;
-unsigned long timePased = 0;
+unsigned long timePassed = 0;
 int counter = 0;
 
 //................colors
@@ -78,6 +77,8 @@ void setTime() {
 }
 
 void setup() {
+  Serial.begin();
+
   // using this board can work on battery
   pinMode(15, OUTPUT);
   digitalWrite(15, 1);
@@ -303,8 +304,8 @@ void updateData() {
 
   //
 
-  if (millis() > timePased + updateTimer) {
-    timePased = millis();
+  if (millis() > timePassed + updateTimer) {
+    timePassed = millis();
     counter++;
     getData();
 
