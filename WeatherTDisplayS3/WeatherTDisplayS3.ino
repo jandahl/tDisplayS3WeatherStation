@@ -3,12 +3,12 @@
 #include <ArduinoJson.h>  // 7.1.0
 #include <HTTPClient.h>   // https://github.com/arduino-libraries/ArduinoHttpClient   version 0.6.1
 #include <ESP32Time.h>    // https://github.com/fbiego/ESP32Time  verison 2.0.6
-#include "NotoSansBold15.h"
-#include "tinyFont.h"
-#include "smallFont.h"
-#include "middleFont.h"
-#include "bigFont.h"
-#include "font18.h"
+#include "./fonts/NotoSansBold15.h"
+#include "./fonts/tinyFont.h"
+#include "./fonts/smallFont.h"
+#include "./fonts/middleFont.h"
+#include "./fonts/bigFont.h"
+#include "./fonts/font18.h"
 #include "config.h"
 #include "theme.h"
 #include "ErrorHandling.h"
@@ -19,7 +19,7 @@ TFT_eSprite errSprite = TFT_eSprite(&tft);
 ESP32Time rtc(0);
 
 
-//#################### EDIT THIS  ###################
+//#################### These are imported from `config.h`  ###################
 int zone = 2;
 String town = towns[2];
 // defined in config.h
@@ -36,7 +36,7 @@ int updateTimer = 180000;
 // If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points
 // for a graph that is not 240 points wide. Weeeeird.
 
-//#################### end of edits ###################
+//#################### end of config.h imports ###################
 
 
 const char* ntpServer = "dk.pool.ntp.org";
