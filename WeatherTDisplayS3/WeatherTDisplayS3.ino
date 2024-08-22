@@ -34,13 +34,16 @@ String units = METRICORIMPERIAL;  //  metric, imperial
 int updateTimer = 180000;
 
 // If 180000 ms/3 minutes gives 12 hours of graphs, that is 240 data points
-// for a graph that is not 240 points wide. Weeeeird.
+// for a graph that is 24 data points wide.
+// I don't know if it averages out the 10 data points or picks one at random,
+// but that's a minor matter as that doesn't tend to fluctuate much
+
+const char* ntpServer = NTPSERVER;
 
 //#################### end of config.h imports ###################
 
-
-const char* ntpServer = "dk.pool.ntp.org";
-String server = "https://api.openweathermap.org/data/2.5/weather?q=" + town + "&appid=" + myAPI + "&units=" + units;
+String weatherServer = WEATHERSERVER;
+String server = weatherServer + town + "&appid=" + myAPI + "&units=" + units;
 
 
 //additional variables
@@ -85,7 +88,8 @@ void setup() {
   tft.init();
   tft.setRotation(1);
   tft.fillScreen(BACKGROUND_COLOR);
-  tft.drawString("Connecting to WIFI!!", 30, 50, 4);
+  tft.drawString("Connecting to Wi-Fi", 30, 50, 4);
+  tft.drawString("Join Vejrdims to reconfigure", 30, 70, 4);
   sprite.createSprite(320, 170);
   errSprite.createSprite(164, 15);
 
@@ -99,7 +103,7 @@ void setup() {
   WiFiManager wifiManager;
   wifiManager.setConfigPortalTimeout(5000);
 
-  if (!wifiManager.autoConnect("VolosWifiConf", "password")) {
+  if (!wifiManager.autoConnect(SSID, PASSWORD)) {
     Serial.println("Failed to connect and hit timeout");
     delay(3000);
     ESP.restart();
