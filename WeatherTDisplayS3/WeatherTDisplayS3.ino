@@ -21,7 +21,7 @@ ESP32Time rtc(0);
 
 //#################### These are imported from `config.h`  ###################
 int zone = 2;
-String town = towns[2];
+String town = towns[0];
 // defined in config.h
 String myAPI = OPENWEATHER_API_KEY;
 String units = METRICORIMPERIAL;  //  metric, imperial
